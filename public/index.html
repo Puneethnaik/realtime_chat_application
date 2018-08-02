@@ -19,6 +19,10 @@
   $(function(){
     var socket = io();
     $('form').submit(function(){
+        msgObj = {
+            'from' : 'k',
+            'to' : 
+        }
         socket.emit('chat message', $('#m').val());
         $('#m').val('');
         return false;

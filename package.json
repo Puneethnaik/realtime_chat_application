@@ -18,7 +18,10 @@
   "homepage": "https://github.com/Puneethnaik/realtime_chat_application#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "client-sessions": "^0.8.0",
+    "ejs": "^2.6.1",
     "express": "^4.16.3",
+    "mysql": "^2.16.0",
     "socket.io": "^2.1.1"
   }
 }

@@ -1,0 +1,37 @@
+<% include ./partials/header_dup%>
+<div class = "container">
+        
+    <div class = "row">
+        <div class = "col-md-2"></div>
+        <div class = "col-md-8">
+            <br>
+            <br>
+            <br>
+            <form action = "/api/processPaste/" method = "POST">
+            <div class="form-group">
+                <div style = "margin:15px;">
+                <label for = "paste">New Task:</label>
+                <textarea class="form-control" rows = "5" id = "paste" name = "taskBody"></textarea>
+                </div>
+                <div style = "margin:15px;">
+                <label for="pasteExpiration"> Task Duration</label>
+                <input type = "text" class = "form-control" name = "pasteExpiration" placeholder = "minutes 1 - 120">
+                </div>
+                <div id = "pasteExposureDiv" style = "margin:15px;">
+                    <label for="pasteExposure" style="margin-right:35px"> Paste Exposure</label>    
+                    <label class="radio-inline" style = "margin:15px;"><input type="radio" value="public" name = "pasteExposure" >Public</label>
+                    <label class="radio-inline" style = "margin:15px;"><input type="radio" value="private" name = "pasteExposure" >Private</label>
+                </div>
+                <div style = "margin:15px;">
+                    <label for="pasteTitle"> Paste Title</label>
+                    <input type = "text" class = "form-control" name = "pasteTitle">
+                </div>
+                <button style = "margin:15px;" type="submit" class="btn">Make New Paste</button>
+            </div>
+            </form>
+        </div>
+        <div class = "col-md-2"></div>
+    </div>
+</div>
+</body>
+</html>
