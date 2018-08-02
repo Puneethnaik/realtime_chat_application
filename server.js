@@ -2,6 +2,7 @@ var path = require('path');
 var login = require('./routes/loginRoutes');
 var session = require('client-sessions');
 var express = require('express');
+var SQLCalls = require('./routes/mySqlCalls');
 var app = express();
 var http = require('http').Server(app);
 var bodyParser= require('body-parser');
@@ -90,6 +91,12 @@ app.get('/logout', function(req, res){
 });
 //end loginlogout entry points
 
+app.get("/chat_window", function(req, res){
+    function callback(users){
+        res.render("chat_window.ejs", {users : users});
+    }
+    SQLCalls.getUsers(callback);
+});
 
 var port = 3000 | process.env.port;
 http.listen(port, function(req, res){
