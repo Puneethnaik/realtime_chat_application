@@ -10,6 +10,10 @@
 <script>
   $(function(){
     var socket = io();
+    userObj = {
+      'id' : <%-id%>
+    }
+    socket.emit("connected", userObj)
     $('form').submit(function(){
         msgObj = {
             'from' : <%-id%>,
@@ -18,6 +22,18 @@
         socket.emit('chat message', $('#m').val());
         $('#m').val('');
         return false;
+    })
+    socket.on("connected", function(userObj){
+      console.log("new user" + JSON.stringify(userObj));
+      $('#' + userObj.id).removeClass("disconnected");
+      $('#' + userObj.id).addClass("connected");
+
+      socket.on('disconnection', function(userId){
+        console.log("this user disconnected" + userId);
+        $('#' + userId).removeClass("connected");
+        $('#' + userId).addClass("disconnected");
+      })
+      
     })
     socket.on('chat message', function(msg){
         $('#messages').append($('<li>').text(msg));
@@ -34,7 +50,7 @@
               <% for(var i = 0 ; i < users.length; i++){
                   if(users[i].id != id){
                 %>
-                  <li id = <%-users[i].id%> class = "disconnected"><span><img src = "images/default_dp.png"></span><span><%-users[i].name%></span> </li>
+                  <li id = <%-users[i].id%> class = <%if(onlineUsers[users[i].id] === "online"){%>connected<%} else{%>disconnected<%}%> "><span><img src = "images/default_dp.png"></span><span><%-users[i].name%></span> </li>
               <%}
                   }%>
             </ul>

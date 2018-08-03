@@ -7,6 +7,10 @@ var app = express();
 var http = require('http').Server(app);
 var bodyParser= require('body-parser');
 var io = require('socket.io')(http);
+var CronJob = require('cron').CronJob;
+
+//global variables
+var allUsers = []
 
 //middleware
 app.use(bodyParser.json());
@@ -19,9 +23,21 @@ app.set('views', path.join(__dirname, 'views'));
 //sessions
 app.use(session({
     cookieName : 'session',
-    secret : 'groupchat_secret'
+    secret : 'groupchat_secret',
+    duration : 0
 }));
 
+//cronJobs
+new CronJob('* * * * * *', function() {
+    console.log('You will see this message every second');
+    console.log('allUsers is')
+    for(var key in allUsers){
+        console.log(JSON.stringify(key));
+        console.log();
+    }
+    // console.log(JSON.stringify(allUsers));
+    console.log("end");
+}, null, true, 'America/Los_Angeles');
 
 
 //mysql
@@ -40,19 +56,52 @@ connection.connect(function(err){
     else console.log("mysql successfully connected");
 })
 
-
+var findUser = function(socket){
+    //find userid given the socket to which he/she is connected
+    for(var key in allUsers){
+        if(allUsers[key] === socket){
+            return key;
+        }
+    }
+    return -1;
+}
+var deleteUser = function(socket){
+    //delete userid of the socket to which he/she is connected
+    for(var key in allUsers){
+        if(allUsers[key] === socket){
+            delete allUsers[key];
+            break;
+        }
+    }
+}
 io.on('connection', function(socket){
     messages = [];
     console.log("a user connected");
+    // io.emit('connection',)
     socket.on('disconnect', function(){
-        console.log("user disconnected" + messages);
+        console.log("user disconnected" + JSON.stringify(allUsers[socket]));
+        var key = findUser(socket)
+        io.emit('disconnection', findUser(socket));
+        deleteUser(socket);
+        // delete allUsers[socket];
+        // console.log("now allUsers are :" + allUsers);
     })
     socket.on('chat message', function(msg){
         console.log('msg : ' + msg);
         messages.push(msg);
         io.emit('chat message', msg);
     })
+    socket.on("connected", function(userObj){
+        console.log(JSON.stringify(userObj));
+        allUsers[userObj.id] = socket;
+        // console.log("allUsers now " + allUsers.length);
+        socket.broadcast.emit("connected",userObj)
+    })
+   /*  socket.on("disconnection", function(userObj){
+        console.log(userObj);
+    }) */
 });
+
 
 
 app.get("/", function(req, res){
@@ -99,7 +148,12 @@ app.get("/chat_window", function(req, res){
     function callback(users){
         console.log("user id is " + req.session.user);
         console.log(users);
-        res.render("chat_window.ejs", {users : users, id : req.session.user});
+        var onlineUsers = {}
+        for(var key in allUsers){
+            onlineUsers[key] = "online";
+        }
+        console.log("online users : " + JSON.stringify(onlineUsers));
+        res.render("chat_window.ejs", {users : users, id : req.session.user, onlineUsers : onlineUsers});
     }
     SQLCalls.getUsers(callback);
 });
