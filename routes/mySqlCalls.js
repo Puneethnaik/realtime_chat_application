@@ -14,7 +14,7 @@ connection.connect(function(err){
 })
 
 var getUsers = function(callback){
-    query = "SELECT name from users";
+    query = "SELECT id, name from users";
     connection.query(query, function(err, result, fields){
         if(err){
             return err;

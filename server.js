@@ -57,7 +57,8 @@ io.on('connection', function(socket){
 
 app.get("/", function(req, res){
     console.log("Hello realtime world");
-    res.sendFile(__dirname + "/index.html");
+    res.send("Hello world");
+    //res.sendFile(__dirname + "/index.html");
 });
 
 //loginlogout entry points
@@ -92,8 +93,13 @@ app.get('/logout', function(req, res){
 //end loginlogout entry points
 
 app.get("/chat_window", function(req, res){
+    if(!req.session.user){
+        res.redirect('/login');
+    }
     function callback(users){
-        res.render("chat_window.ejs", {users : users});
+        console.log("user id is " + req.session.user);
+        console.log(users);
+        res.render("chat_window.ejs", {users : users, id : req.session.user});
     }
     SQLCalls.getUsers(callback);
 });
