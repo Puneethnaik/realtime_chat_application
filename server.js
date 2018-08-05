@@ -8,7 +8,7 @@ var http = require('http').Server(app);
 var bodyParser= require('body-parser');
 var io = require('socket.io')(http);
 var CronJob = require('cron').CronJob;
-
+var messageAPI = require('./routes/messageAPI');
 //global variables
 var allUsers = []
 
@@ -141,6 +141,9 @@ app.get('/logout', function(req, res){
 });
 //end loginlogout entry points
 
+//message processing API
+app.use('/api/', messageAPI);
+
 app.get("/chat_window", function(req, res){
     if(!req.session.user){
         res.redirect('/login');
@@ -157,6 +160,8 @@ app.get("/chat_window", function(req, res){
     }
     SQLCalls.getUsers(callback);
 });
+
+
 
 var port = 3000 | process.env.port;
 http.listen(port, function(req, res){
